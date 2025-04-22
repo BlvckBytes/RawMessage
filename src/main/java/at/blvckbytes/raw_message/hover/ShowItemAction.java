@@ -139,7 +139,12 @@ public class ShowItemAction extends HoverAction {
     JsonObject tagObject = new JsonObject();
     tagObject.add("display", displayObject);
 
-    object.addProperty("tag", GSON_INSTANCE.toJson(tagObject));
+    // Why would they stringify the tag-key when its parent just has been
+    // converted to a structured object? How weird.
+    if (version.compareTo(ServerVersion.V1_16_0) >= 0)
+      object.addProperty("tag", GSON_INSTANCE.toJson(tagObject));
+    else
+      object.add("tag", tagObject);
   }
 
   private String decideIdValue(ServerVersion version) {
