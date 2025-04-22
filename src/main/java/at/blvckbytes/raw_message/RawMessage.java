@@ -24,6 +24,7 @@ public class RawMessage {
   private @Nullable ClickAction clickAction;
   private @Nullable HoverAction hoverAction;
   private final List<RawMessage> extraMessages;
+  private boolean clearedImplicitStyling;
 
   public RawMessage() {
     this(null);
@@ -63,7 +64,9 @@ public class RawMessage {
     // On item-names or lore-lines, italics is enabled implicitly
     // Also, lore-lines usually are purple by default
     this.color = MessageColor.WHITE;
-    return disableStyle(MessageStyle.ITALIC);
+    disableStyle(MessageStyle.ITALIC);
+    this.clearedImplicitStyling = true;
+    return this;
   }
 
   public RawMessage enableStyle(MessageStyle style) {
@@ -170,6 +173,35 @@ public class RawMessage {
 
   public JsonObject toJsonObject() {
     return toJsonObject(ServerVersion.CURRENT);
+  }
+
+  public String toLegacyText() {
+    if (text == null || text.isEmpty())
+      return "";
+
+    StringBuilder result = new StringBuilder();
+
+    if (this.clearedImplicitStyling)
+      result.append("§r");
+
+    if (color != null)
+      result.append('§').append(color.legacyCharacter);
+
+    for (MessageStyle messageStyle : MessageStyle.VALUES) {
+      Boolean styleState = this.styleStates[messageStyle.ordinal()];
+
+      if (styleState == null || !styleState)
+        continue;
+
+      result.append('§').append(messageStyle.legacyCharacter);
+    }
+
+    result.append(text);
+
+    for (RawMessage extraMessage : extraMessages)
+      result.append(extraMessage.toLegacyText());
+
+    return result.toString();
   }
 
   public void tellRawTo(Player player, ServerVersion version) {

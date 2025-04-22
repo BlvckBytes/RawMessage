@@ -116,8 +116,10 @@ public class ShowItemAction extends HoverAction {
         for (RawMessage loreLine : lore) {
           if (version.compareTo(ServerVersion.V1_21_5) >= 0)
             loreArray.add(loreLine.toJsonObject(version));
-          else
-            loreArray.add(loreLine.toJsonString(version));
+          else {
+            // Some older versions of gson do not support JsonArray#add(String)
+            loreArray.add(new JsonPrimitive(loreLine.toJsonString(version)));
+          }
         }
       }
 
@@ -125,15 +127,30 @@ public class ShowItemAction extends HoverAction {
       return;
     }
 
-    if (name != null)
-      displayObject.addProperty("Name", name.toJsonString(version));
+    // Minecraft 1.14+ supports components in Name and Lore
+    // Minecraft 1.13 supports components in Name, but not Lore
+    // Minecraft 1.12- supports no components, neither in Name nor Lore
+
+    if (name != null) {
+      if (version.compareTo(ServerVersion.V1_13_0) >= 0) {
+        displayObject.addProperty("Name", name.toJsonString(version));
+      } else {
+        displayObject.addProperty("Name", name.toLegacyText());
+      }
+    }
 
     if (!lore.isEmpty()) {
       JsonArray loreArray = new JsonArray();
       displayObject.add("Lore", loreArray);
 
-      for (RawMessage loreLine : lore)
-        loreArray.add(loreLine.toJsonString(version));
+      for (RawMessage loreLine : lore) {
+        if (version.compareTo(ServerVersion.V1_14_0) >= 0) {
+          loreArray.add(loreLine.toJsonString(version));
+        } else {
+          // Some older versions of gson do not support JsonArray#add(String)
+          loreArray.add(new JsonPrimitive(loreLine.toLegacyText()));
+        }
+      }
     }
 
     JsonObject tagObject = new JsonObject();
