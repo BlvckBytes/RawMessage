@@ -77,15 +77,18 @@ public class ShowItemAction extends HoverAction {
     JsonObject dataObject = new JsonObject();
 
     dataObject.addProperty("id", decideIdValue(version));
-    dataObject.addProperty("count", 1);
 
     appendMetaData(dataObject, version);
 
     // Key "value" has been deprecated; contents now also is an object
     if (version.compareTo(ServerVersion.V1_16_0) >= 0) {
+      dataObject.addProperty("count", 1);
       containerObject.add("contents", dataObject);
       return;
     }
+
+    // It's crucial to have this property capitalized - otherwise, the item's invalid
+    dataObject.addProperty("Count", 1);
 
     containerObject.addProperty("value", GSON_INSTANCE.toJson(dataObject));
   }
