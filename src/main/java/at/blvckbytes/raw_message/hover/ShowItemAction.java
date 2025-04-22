@@ -1,8 +1,8 @@
-package me.blvckbytes.raw_message.hover;
+package at.blvckbytes.raw_message.hover;
 
 import com.google.gson.*;
-import me.blvckbytes.raw_message.ServerVersion;
-import me.blvckbytes.raw_message.RawMessage;
+import at.blvckbytes.raw_message.ServerVersion;
+import at.blvckbytes.raw_message.RawMessage;
 import org.bukkit.Material;
 import org.jetbrains.annotations.Nullable;
 

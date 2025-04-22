@@ -1,10 +1,10 @@
-package me.blvckbytes.raw_message;
+package at.blvckbytes.raw_message;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import me.blvckbytes.raw_message.click.ClickAction;
-import me.blvckbytes.raw_message.hover.HoverAction;
+import at.blvckbytes.raw_message.click.ClickAction;
+import at.blvckbytes.raw_message.hover.HoverAction;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;

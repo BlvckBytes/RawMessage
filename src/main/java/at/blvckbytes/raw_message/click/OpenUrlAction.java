@@ -1,7 +1,7 @@
-package me.blvckbytes.raw_message.click;
+package at.blvckbytes.raw_message.click;
 
 import com.google.gson.JsonObject;
-import me.blvckbytes.raw_message.ServerVersion;
+import at.blvckbytes.raw_message.ServerVersion;
 
 public class OpenUrlAction extends ClickAction {
 

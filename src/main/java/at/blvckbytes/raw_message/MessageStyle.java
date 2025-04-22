@@ -1,4 +1,4 @@
-package me.blvckbytes.raw_message;
+package at.blvckbytes.raw_message;
 
 import java.util.List;
 
