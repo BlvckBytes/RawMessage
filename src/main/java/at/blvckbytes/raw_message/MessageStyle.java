@@ -1,5 +1,7 @@
 package at.blvckbytes.raw_message;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public enum MessageStyle {
@@ -10,7 +12,7 @@ public enum MessageStyle {
   MAGIC("obfuscated")
   ;
 
-  public static final List<MessageStyle> VALUES = List.of(values());
+  public static final List<MessageStyle> VALUES = Collections.unmodifiableList(Arrays.asList(values()));
 
   public final String value;
 
