@@ -1,0 +1,140 @@
+package me.blvckbytes.raw_message;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import me.blvckbytes.raw_message.click.ClickAction;
+import me.blvckbytes.raw_message.hover.HoverAction;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class RawMessage {
+
+  private static final Gson GSON_INSTANCE = new Gson();
+
+  private String text;
+  private @Nullable String translate;
+  private @Nullable List<RawMessage> translateWith;
+  private @Nullable MessageColor color;
+  private final Boolean[] styleStates;
+  private @Nullable ClickAction clickAction;
+  private @Nullable HoverAction hoverAction;
+  private final List<RawMessage> extraMessages;
+
+  public RawMessage() {
+    this.styleStates = new Boolean[MessageStyle.VALUES.size()];
+    this.extraMessages = new ArrayList<>();
+    this.text = "";
+  }
+
+  public RawMessage setText(String text) {
+    this.text = text;
+    return this;
+  }
+
+  public RawMessage setTranslate(String key, @Nullable List<RawMessage> translateWith) {
+    this.translate = key;
+    this.translateWith = translateWith;
+    return this;
+  }
+
+  public RawMessage setColor(@Nullable MessageColor color) {
+    this.color = color;
+    return this;
+  }
+
+  public RawMessage enableStyle(MessageStyle style) {
+    styleStates[style.ordinal()] = true;
+    return this;
+  }
+
+  public RawMessage disableStyle(MessageStyle style) {
+    styleStates[style.ordinal()] = false;
+    return this;
+  }
+
+  public RawMessage clearStyle(MessageStyle style) {
+    styleStates[style.ordinal()] = null;
+    return this;
+  }
+
+  public RawMessage setClickAction(@Nullable ClickAction action) {
+    this.clickAction = action;
+    return this;
+  }
+
+  public RawMessage setHoverAction(@Nullable HoverAction action) {
+    this.hoverAction = action;
+    return this;
+  }
+
+  public RawMessage addExtra(RawMessage extra) {
+    this.extraMessages.add(extra);
+    return this;
+  }
+
+  public String toJsonString(ServerVersion version) {
+    return GSON_INSTANCE.toJson(toJsonObject(version));
+  }
+
+  private void appendTranslationOrText(JsonObject object, ServerVersion version) {
+    if (translate != null) {
+      object.addProperty("translate", translate);
+
+      if (translateWith != null) {
+        JsonArray translateWithArray = new JsonArray();
+
+        for (RawMessage value : translateWith)
+          translateWithArray.add(value.toJsonObject(version));
+
+        object.add("with", translateWithArray);
+      }
+    }
+
+    else
+      object.addProperty("text", text);
+  }
+
+  private void appendStyleAndColor(JsonObject object) {
+    if (color != null)
+      object.addProperty("color", color.value);
+
+    for (MessageStyle messageStyle : MessageStyle.VALUES) {
+      Boolean styleState = this.styleStates[messageStyle.ordinal()];
+
+      if (styleState == null)
+        continue;
+
+      object.addProperty(messageStyle.value, styleState);
+    }
+  }
+
+  private void appendExtraMessages(JsonObject object, ServerVersion version) {
+    if (!extraMessages.isEmpty()) {
+      JsonArray extraItems = new JsonArray();
+
+      for (RawMessage extraMessage : extraMessages)
+        extraItems.add(extraMessage.toJsonObject(version));
+
+      object.add("extra", extraItems);
+    }
+  }
+
+  public JsonObject toJsonObject(ServerVersion version) {
+    JsonObject result = new JsonObject();
+
+    appendTranslationOrText(result, version);
+    appendStyleAndColor(result);
+    appendExtraMessages(result, version);
+
+    if (clickAction != null)
+      clickAction.appendSelf(result, version);
+
+    if (hoverAction != null)
+      hoverAction.appendSelf(result, version);
+
+    return result;
+  }
+}

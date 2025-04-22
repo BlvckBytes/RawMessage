@@ -1,0 +1,3 @@
+# RawMessage
+
+A concise and independent library, leveraging the `tellraw`-command to send raw JSON chat-components to players, supporting various features like click-/hover-events, color, style, translation and the like. Since minecraft revises this JSON-format all the time, quite a few case-decisions are to be made and maintained in regard to future version - may this little library be the place to do so.
