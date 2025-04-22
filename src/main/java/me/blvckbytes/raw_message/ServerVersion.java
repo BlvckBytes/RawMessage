@@ -2,7 +2,6 @@ package me.blvckbytes.raw_message;
 
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -10,6 +9,8 @@ import java.util.regex.Pattern;
 public class ServerVersion implements Comparable<ServerVersion> {
 
   private static final Pattern MINECRAFT_VERSION_MATCHER = Pattern.compile("\\(MC: (\\d\\.\\d+(?:\\.\\d+)?)");
+
+  public static final ServerVersion CURRENT = parseCurrent();
 
   public static final ServerVersion V1_21_5 = new ServerVersion(1, 21, 5);
   public static final ServerVersion V1_20_3 = new ServerVersion(1, 20, 3);
@@ -45,13 +46,15 @@ public class ServerVersion implements Comparable<ServerVersion> {
     return "v" + phase + "_" + major + "_" + minor;
   }
 
-  public static @Nullable ServerVersion tryParseCurrent() {
-    Matcher regexMatcher = MINECRAFT_VERSION_MATCHER.matcher(Bukkit.getVersion());
+  private static ServerVersion parseCurrent() {
+    String bukkitVersion = Bukkit.getVersion();
+    Matcher regexMatcher = MINECRAFT_VERSION_MATCHER.matcher(bukkitVersion);
 
     if (!regexMatcher.find())
       return null;
 
-    String[] versionParts = regexMatcher.group(1).split("\\.");
+    String minecraftVersion = regexMatcher.group(1);
+    String[] versionParts = minecraftVersion.split("\\.");
 
     if (versionParts.length < 2)
       return null;
@@ -63,7 +66,7 @@ public class ServerVersion implements Comparable<ServerVersion> {
         versionParts.length == 3 ? Integer.parseInt(versionParts[2]) : 0
       );
     } catch (NumberFormatException exception) {
-      return null;
+      throw new IllegalStateException("Could not parse version-string \"" + minecraftVersion + "\" (part of \"" + bukkitVersion + "\")");
     }
   }
 }

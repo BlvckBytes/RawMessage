@@ -17,6 +17,10 @@ public class ShowItemAction extends HoverAction {
   private @Nullable RawMessage name;
   private List<RawMessage> lore;
 
+  public ShowItemAction() {
+    this(Material.STONE);
+  }
+
   public ShowItemAction(Material material) {
     this.material = material;
     this.lore = new ArrayList<>();
@@ -27,13 +31,32 @@ public class ShowItemAction extends HoverAction {
     return this;
   }
 
+  public ShowItemAction setName(String name) {
+    this.name = new RawMessage(name).clearImplicitStyling();
+    return this;
+  }
+
   public ShowItemAction setLore(List<RawMessage> lore) {
     this.lore = lore;
     return this;
   }
 
+  public ShowItemAction setLoreStrings(List<String> lore) {
+    this.lore.clear();
+
+    for (String line : lore)
+      this.lore.add(new RawMessage(line).clearImplicitStyling());
+
+    return this;
+  }
+
   public ShowItemAction addLoreLine(RawMessage line) {
     this.lore.add(line);
+    return this;
+  }
+
+  public ShowItemAction addLoreLine(String line) {
+    this.lore.add(new RawMessage(line).clearImplicitStyling());
     return this;
   }
 

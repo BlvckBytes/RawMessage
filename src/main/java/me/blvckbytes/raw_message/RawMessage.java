@@ -5,6 +5,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import me.blvckbytes.raw_message.click.ClickAction;
 import me.blvckbytes.raw_message.hover.HoverAction;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -24,9 +26,17 @@ public class RawMessage {
   private final List<RawMessage> extraMessages;
 
   public RawMessage() {
+    this(null);
+  }
+
+  public RawMessage(Object value) {
+    this(String.valueOf(value));
+  }
+
+  public RawMessage(@Nullable String text) {
     this.styleStates = new Boolean[MessageStyle.VALUES.size()];
     this.extraMessages = new ArrayList<>();
-    this.text = "";
+    this.text = text == null ? "" : text;
   }
 
   public RawMessage setText(String text) {
@@ -40,9 +50,20 @@ public class RawMessage {
     return this;
   }
 
+  public RawMessage setTranslate(String key) {
+    return setTranslate(key, null);
+  }
+
   public RawMessage setColor(@Nullable MessageColor color) {
     this.color = color;
     return this;
+  }
+
+  public RawMessage clearImplicitStyling() {
+    // On item-names or lore-lines, italics is enabled implicitly
+    // Also, lore-lines usually are purple by default
+    this.color = MessageColor.WHITE;
+    return disableStyle(MessageStyle.ITALIC);
   }
 
   public RawMessage enableStyle(MessageStyle style) {
@@ -75,8 +96,17 @@ public class RawMessage {
     return this;
   }
 
+  public RawMessage addExtra(String text) {
+    this.extraMessages.add(new RawMessage(text));
+    return this;
+  }
+
   public String toJsonString(ServerVersion version) {
     return GSON_INSTANCE.toJson(toJsonObject(version));
+  }
+
+  public String toJsonString() {
+    return toJsonString(ServerVersion.CURRENT);
   }
 
   private void appendTranslationOrText(JsonObject object, ServerVersion version) {
@@ -136,5 +166,20 @@ public class RawMessage {
       hoverAction.appendSelf(result, version);
 
     return result;
+  }
+
+  public JsonObject toJsonObject() {
+    return toJsonObject(ServerVersion.CURRENT);
+  }
+
+  public void tellRawTo(Player player, ServerVersion version) {
+    Bukkit.dispatchCommand(
+      Bukkit.getConsoleSender(),
+      "tellraw " + player.getName() + " " + toJsonString(version)
+    );
+  }
+
+  public void tellRawTo(Player player) {
+    tellRawTo(player, ServerVersion.CURRENT);
   }
 }
