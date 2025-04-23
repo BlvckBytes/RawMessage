@@ -6,7 +6,7 @@
 
     <groupId>at.blvckbytes</groupId>
     <artifactId>RawMessage</artifactId>
-    <version>0.1</version>
+    <version>0.2</version>
     <url>https://github.com/blvckbytes/RawMessage</url>
     <description>A concise and independent library used to generate minecraft chat-json</description>
 
