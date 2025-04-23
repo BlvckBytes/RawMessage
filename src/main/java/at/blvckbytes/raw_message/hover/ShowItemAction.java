@@ -13,10 +13,8 @@ import java.util.List;
 
 public class ShowItemAction extends HoverAction {
 
-  // TODO: Since 1.11.2-, `value` is SNBT, meaning that keys do not allow quotes
-  //       {"text":"A","hoverEvent":{"action":"show_item","value":"{id:\"stone\",Count:1,tag:{display:{Name:\"hi\"}}}"}}
-
   private static final JsonSerializer SERIALIZER_JSON = new JsonSerializer(false);
+  private static final JsonSerializer SERIALIZER_SNBT = new JsonSerializer(true);
 
   private final Material material;
   private @Nullable RawMessage name;
@@ -95,7 +93,13 @@ public class ShowItemAction extends HoverAction {
     // It's crucial to have this property capitalized - otherwise, the item's invalid
     dataObject.add("Count", 1);
 
-    containerObject.add("value", SERIALIZER_JSON.serialize(dataObject));
+    if (version.compareTo(ServerVersion.V1_12_0) >= 0)
+      containerObject.add("value", SERIALIZER_JSON.serialize(dataObject));
+
+    // Also doesn't support components - only legacy text
+    // Thus follows, that there are no internal JSON-components which could be malformed
+    else
+      containerObject.add("value", SERIALIZER_SNBT.serialize(dataObject));
   }
 
   private void appendMetaData(JsonObject object, ServerVersion version) {
@@ -135,11 +139,10 @@ public class ShowItemAction extends HoverAction {
     // Minecraft 1.12- supports no components, neither in Name nor Lore
 
     if (name != null) {
-      if (version.compareTo(ServerVersion.V1_13_0) >= 0) {
+      if (version.compareTo(ServerVersion.V1_13_0) >= 0)
         displayObject.add("Name", name.toJsonString(version));
-      } else {
+      else
         displayObject.add("Name", name.toLegacyText());
-      }
     }
 
     if (!lore.isEmpty()) {

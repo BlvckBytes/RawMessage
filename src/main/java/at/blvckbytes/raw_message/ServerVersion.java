@@ -18,6 +18,7 @@ public class ServerVersion implements Comparable<ServerVersion> {
   public static final ServerVersion V1_16_0 = new ServerVersion(1, 16, 0);
   public static final ServerVersion V1_14_0 = new ServerVersion(1, 14, 0);
   public static final ServerVersion V1_13_0 = new ServerVersion(1, 13, 0);
+  public static final ServerVersion V1_12_0 = new ServerVersion(1, 12, 0);
 
   public final int phase;
   public final int major;
