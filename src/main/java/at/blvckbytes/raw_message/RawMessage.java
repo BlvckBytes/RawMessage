@@ -1,10 +1,10 @@
 package at.blvckbytes.raw_message;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import at.blvckbytes.raw_message.click.ClickAction;
 import at.blvckbytes.raw_message.hover.HoverAction;
+import at.blvckbytes.raw_message.json.JsonArray;
+import at.blvckbytes.raw_message.json.JsonObject;
+import at.blvckbytes.raw_message.json.JsonSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
@@ -14,7 +14,7 @@ import java.util.List;
 
 public class RawMessage {
 
-  private static final Gson GSON_INSTANCE = new Gson();
+  private static final JsonSerializer SERIALIZER_JSON = new JsonSerializer(false);
 
   private String text;
   private @Nullable String translate;
@@ -105,7 +105,7 @@ public class RawMessage {
   }
 
   public String toJsonString(ServerVersion version) {
-    return GSON_INSTANCE.toJson(toJsonObject(version));
+    return SERIALIZER_JSON.serialize(toJsonObject(version));
   }
 
   public String toJsonString() {
@@ -114,7 +114,7 @@ public class RawMessage {
 
   private void appendTranslationOrText(JsonObject object, ServerVersion version) {
     if (translate != null) {
-      object.addProperty("translate", translate);
+      object.add("translate", translate);
 
       if (translateWith != null) {
         JsonArray translateWithArray = new JsonArray();
@@ -127,12 +127,12 @@ public class RawMessage {
     }
 
     else
-      object.addProperty("text", text);
+      object.add("text", text);
   }
 
   private void appendStyleAndColor(JsonObject object) {
     if (color != null)
-      object.addProperty("color", color.value);
+      object.add("color", color.value);
 
     for (MessageStyle messageStyle : MessageStyle.VALUES) {
       Boolean styleState = this.styleStates[messageStyle.ordinal()];
@@ -140,7 +140,7 @@ public class RawMessage {
       if (styleState == null)
         continue;
 
-      object.addProperty(messageStyle.value, styleState);
+      object.add(messageStyle.value, styleState);
     }
   }
 

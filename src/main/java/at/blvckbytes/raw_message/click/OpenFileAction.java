@@ -1,7 +1,7 @@
 package at.blvckbytes.raw_message.click;
 
-import com.google.gson.JsonObject;
 import at.blvckbytes.raw_message.ServerVersion;
+import at.blvckbytes.raw_message.json.JsonObject;
 
 public class OpenFileAction extends ClickAction {
 
@@ -14,7 +14,7 @@ public class OpenFileAction extends ClickAction {
   @Override
   public void appendSelf(JsonObject component, ServerVersion version) {
     JsonObject container = makeAndAppendContainer(component, version);
-    container.addProperty("action", "open_file");
-    container.addProperty("value", path);
+    container.add("action", "open_file");
+    container.add("value", path);
   }
 }

@@ -1,8 +1,8 @@
 package at.blvckbytes.raw_message.hover;
 
-import com.google.gson.JsonObject;
 import at.blvckbytes.raw_message.ServerVersion;
 import at.blvckbytes.raw_message.RawMessage;
+import at.blvckbytes.raw_message.json.JsonObject;
 
 public class ShowTextAction extends HoverAction {
 
@@ -16,7 +16,7 @@ public class ShowTextAction extends HoverAction {
   public void appendSelf(JsonObject component, ServerVersion version) {
     JsonObject container = makeAndAppendContainer(component, version);
 
-    container.addProperty("action", "show_text");
+    container.add("action", "show_text");
 
     if (version.compareTo(ServerVersion.V1_21_5) >= 0) {
       // Can they not make up their minds?

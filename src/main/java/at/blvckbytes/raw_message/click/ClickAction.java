@@ -1,7 +1,7 @@
 package at.blvckbytes.raw_message.click;
 
-import com.google.gson.JsonObject;
 import at.blvckbytes.raw_message.ServerVersion;
+import at.blvckbytes.raw_message.json.JsonObject;
 
 public abstract class ClickAction {
 

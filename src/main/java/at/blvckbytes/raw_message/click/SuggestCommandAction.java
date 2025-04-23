@@ -1,7 +1,7 @@
 package at.blvckbytes.raw_message.click;
 
-import com.google.gson.JsonObject;
 import at.blvckbytes.raw_message.ServerVersion;
+import at.blvckbytes.raw_message.json.JsonObject;
 
 public class SuggestCommandAction extends ClickAction {
 
@@ -14,11 +14,11 @@ public class SuggestCommandAction extends ClickAction {
   @Override
   public void appendSelf(JsonObject component, ServerVersion version) {
     JsonObject container = makeAndAppendContainer(component, version);
-    container.addProperty("action", "suggest_command");
+    container.add("action", "suggest_command");
 
     if (version.compareTo(ServerVersion.V1_21_5) >= 0)
-      container.addProperty("command", command);
+      container.add("command", command);
     else
-      container.addProperty("value", command);
+      container.add("value", command);
   }
 }

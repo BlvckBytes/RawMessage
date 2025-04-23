@@ -1,7 +1,7 @@
 package at.blvckbytes.raw_message.click;
 
-import com.google.gson.JsonObject;
 import at.blvckbytes.raw_message.ServerVersion;
+import at.blvckbytes.raw_message.json.JsonObject;
 
 public class OpenUrlAction extends ClickAction {
 
@@ -14,11 +14,11 @@ public class OpenUrlAction extends ClickAction {
   @Override
   public void appendSelf(JsonObject component, ServerVersion version) {
     JsonObject container = makeAndAppendContainer(component, version);
-    container.addProperty("action", "open_url");
+    container.add("action", "open_url");
 
     if (version.compareTo(ServerVersion.V1_21_5) >= 0)
-      container.addProperty("url", url);
+      container.add("url", url);
     else
-      container.addProperty("value", url);
+      container.add("value", url);
   }
 }

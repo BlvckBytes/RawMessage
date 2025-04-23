@@ -1,8 +1,10 @@
 package at.blvckbytes.raw_message.hover;
 
-import com.google.gson.*;
 import at.blvckbytes.raw_message.ServerVersion;
 import at.blvckbytes.raw_message.RawMessage;
+import at.blvckbytes.raw_message.json.JsonArray;
+import at.blvckbytes.raw_message.json.JsonObject;
+import at.blvckbytes.raw_message.json.JsonSerializer;
 import org.bukkit.Material;
 import org.jetbrains.annotations.Nullable;
 
@@ -11,7 +13,10 @@ import java.util.List;
 
 public class ShowItemAction extends HoverAction {
 
-  private static final Gson GSON_INSTANCE = new Gson();
+  // TODO: Since 1.11.2-, `value` is SNBT, meaning that keys do not allow quotes
+  //       {"text":"A","hoverEvent":{"action":"show_item","value":"{id:\"stone\",Count:1,tag:{display:{Name:\"hi\"}}}"}}
+
+  private static final JsonSerializer SERIALIZER_JSON = new JsonSerializer(false);
 
   private final Material material;
   private @Nullable RawMessage name;
@@ -64,33 +69,33 @@ public class ShowItemAction extends HoverAction {
   public void appendSelf(JsonObject component, ServerVersion version) {
     JsonObject containerObject = makeAndAppendContainer(component, version);
 
-    containerObject.addProperty("action", "show_item");
+    containerObject.add("action", "show_item");
 
     // Properties have been inlined
     if (version.compareTo(ServerVersion.V1_21_5) >= 0) {
-      containerObject.addProperty("id", decideIdValue(version));
-      containerObject.addProperty("count", 1);
+      containerObject.add("id", decideIdValue(version));
+      containerObject.add("count", 1);
       appendMetaData(containerObject, version);
       return;
     }
 
     JsonObject dataObject = new JsonObject();
 
-    dataObject.addProperty("id", decideIdValue(version));
+    dataObject.add("id", decideIdValue(version));
 
     appendMetaData(dataObject, version);
 
     // Key "value" has been deprecated; contents now also is an object
     if (version.compareTo(ServerVersion.V1_16_0) >= 0) {
-      dataObject.addProperty("count", 1);
+      dataObject.add("count", 1);
       containerObject.add("contents", dataObject);
       return;
     }
 
     // It's crucial to have this property capitalized - otherwise, the item's invalid
-    dataObject.addProperty("Count", 1);
+    dataObject.add("Count", 1);
 
-    containerObject.addProperty("value", GSON_INSTANCE.toJson(dataObject));
+    containerObject.add("value", SERIALIZER_JSON.serialize(dataObject));
   }
 
   private void appendMetaData(JsonObject object, ServerVersion version) {
@@ -106,7 +111,7 @@ public class ShowItemAction extends HoverAction {
         if (version.compareTo(ServerVersion.V1_21_5) >= 0)
           displayObject.add("minecraft:custom_name", name.toJsonObject(version));
         else
-          displayObject.addProperty("minecraft:custom_name", name.toJsonString(version));
+          displayObject.add("minecraft:custom_name", name.toJsonString(version));
       }
 
       if (!lore.isEmpty()) {
@@ -116,10 +121,8 @@ public class ShowItemAction extends HoverAction {
         for (RawMessage loreLine : lore) {
           if (version.compareTo(ServerVersion.V1_21_5) >= 0)
             loreArray.add(loreLine.toJsonObject(version));
-          else {
-            // Some older versions of gson do not support JsonArray#add(String)
-            loreArray.add(new JsonPrimitive(loreLine.toJsonString(version)));
-          }
+          else
+            loreArray.add(loreLine.toJsonString(version));
         }
       }
 
@@ -133,9 +136,9 @@ public class ShowItemAction extends HoverAction {
 
     if (name != null) {
       if (version.compareTo(ServerVersion.V1_13_0) >= 0) {
-        displayObject.addProperty("Name", name.toJsonString(version));
+        displayObject.add("Name", name.toJsonString(version));
       } else {
-        displayObject.addProperty("Name", name.toLegacyText());
+        displayObject.add("Name", name.toLegacyText());
       }
     }
 
@@ -144,12 +147,10 @@ public class ShowItemAction extends HoverAction {
       displayObject.add("Lore", loreArray);
 
       for (RawMessage loreLine : lore) {
-        if (version.compareTo(ServerVersion.V1_14_0) >= 0) {
+        if (version.compareTo(ServerVersion.V1_14_0) >= 0)
           loreArray.add(loreLine.toJsonString(version));
-        } else {
-          // Some older versions of gson do not support JsonArray#add(String)
-          loreArray.add(new JsonPrimitive(loreLine.toLegacyText()));
-        }
+        else
+          loreArray.add(loreLine.toLegacyText());
       }
     }
 
@@ -159,7 +160,7 @@ public class ShowItemAction extends HoverAction {
     // Why would they stringify the tag-key when its parent just has been
     // converted to a structured object? How weird.
     if (version.compareTo(ServerVersion.V1_16_0) >= 0)
-      object.addProperty("tag", GSON_INSTANCE.toJson(tagObject));
+      object.add("tag", SERIALIZER_JSON.serialize(tagObject));
     else
       object.add("tag", tagObject);
   }
