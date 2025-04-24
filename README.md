@@ -43,7 +43,7 @@ Next up, the library's corresponding files need to be shaded into the final JAR 
                         </artifactSet>
                         <relocations>
                             <relocation>
-                                <pattern>me.blvckbytes.raw_message</pattern>
+                                <pattern>at.blvckbytes.raw_message</pattern>
                                 <!-- Just an example - feel free to relocate however you see fit! :) -->
                                 <shadedPattern>your.namespace.project_name.util.raw_message</shadedPattern>
                             </relocation>
