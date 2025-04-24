@@ -18,6 +18,44 @@ In order to avoid the friction cloning, building from source and installing into
 </dependency>
 ```
 
+Next up, the library's corresponding files need to be shaded into the final JAR of your project; as to avoid collisions within the JVM's global namespace for the case when multiple plugins use varying versions of this dependency, relocation is also highly advised - due to the MIT license and also to the fact that I do not feel the need to be credited, you might as well skip the `at.blvckbytes`-prefix and directly inline into your project's, for example, utilities-package.
+
+```xml
+<!-- The build-section within your project's pom.xml -->
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-shade-plugin</artifactId>
+            <version>3.6.0</version>
+            <executions>
+                <execution>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>shade</goal>
+                    </goals>
+                    <configuration>
+                        <createDependencyReducedPom>false</createDependencyReducedPom>
+                        <artifactSet>
+                            <includes>
+                                <include>at.blvckbytes:RawMessage</include>
+                            </includes>
+                        </artifactSet>
+                        <relocations>
+                            <relocation>
+                                <pattern>me.blvckbytes.raw_message</pattern>
+                                <!-- Just an example - feel free to relocate however you see fit! :) -->
+                                <shadedPattern>your.namespace.project_name.util.raw_message</shadedPattern>
+                            </relocation>
+                        </relocations>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
+    </plugins>
+</build>
+```
+
 ## Usage
 
 By composing various elements this library has to offer, a message can be specified step-by-step in a piecewise manner, without the need to specify any version-dependent information. Simply start by constructing a new `RawMessage`:
