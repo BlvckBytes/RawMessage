@@ -1,6 +1,10 @@
 package at.blvckbytes.raw_message;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MessageColor {
 
@@ -25,6 +29,13 @@ public class MessageColor {
     BLACK, DARK_BLUE, DARK_GREEN, DARK_AQUA, DARK_RED, DARK_PURPLE, GOLD,
     GRAY, DARK_GRAY, BLUE, GREEN, AQUA, RED, LIGHT_PURPLE, YELLOW, WHITE,
   };
+
+  private static final Map<String, MessageColor> legacyColorByName = new HashMap<>();
+
+  static {
+    for (MessageColor color : LEGACY_COLORS)
+      legacyColorByName.put(color.value, color);
+  }
 
   public final String value;
   public final char legacyCharacter;
@@ -83,5 +94,9 @@ public class MessageColor {
     } catch (NumberFormatException ignored) {
       throw new IllegalStateException("Expected \"" + hexValue + "\" to be of pattern #[0-9A-Fa-f]{6}");
     }
+  }
+
+  public static @Nullable MessageColor fromName(String name) {
+    return legacyColorByName.get(name.toLowerCase());
   }
 }

@@ -40,6 +40,51 @@ public class RawMessage {
     this.text = text == null ? "" : text;
   }
 
+  private RawMessage(
+    String text,
+    @Nullable String translate,
+    @Nullable List<RawMessage> translateWith,
+    @Nullable MessageColor color,
+    Boolean[] styleStates,
+    @Nullable ClickAction clickAction,
+    @Nullable HoverAction hoverAction,
+    List<RawMessage> extraMessages,
+    boolean clearedImplicitStyling
+  ) {
+    this.text = text;
+    this.translate = translate;
+
+    if (translateWith != null) {
+      this.translateWith = new ArrayList<>();
+
+      for (RawMessage item : translateWith)
+        this.translateWith.add(item.duplicate());
+    }
+
+    this.color = color;
+
+    this.styleStates = new Boolean[styleStates.length];
+    System.arraycopy(styleStates, 0, this.styleStates, 0, styleStates.length);
+
+    // These types are immutable
+    this.clickAction = clickAction;
+    this.hoverAction = hoverAction;
+
+    this.extraMessages = new ArrayList<>();
+
+    for (RawMessage item : extraMessages)
+      this.extraMessages.add(item.duplicate());
+
+    this.clearedImplicitStyling = clearedImplicitStyling;
+  }
+
+  public RawMessage duplicate() {
+    return new RawMessage(
+      this.text, this.translate, this.translateWith, this.color, this.styleStates, this.clickAction,
+      this.hoverAction, this.extraMessages, this.clearedImplicitStyling
+    );
+  }
+
   public RawMessage setText(String text) {
     this.text = text;
     return this;
