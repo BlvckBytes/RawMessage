@@ -31,4 +31,9 @@ public class ShowTextAction extends HoverAction {
 
     container.add("value", text.toJsonObject(version));
   }
+
+  @Override
+  public HoverAction duplicate() {
+    return new ShowTextAction(text.duplicate());
+  }
 }

@@ -66,9 +66,11 @@ public class RawMessage {
     this.styleStates = new Boolean[styleStates.length];
     System.arraycopy(styleStates, 0, this.styleStates, 0, styleStates.length);
 
-    // These types are immutable
-    this.clickAction = clickAction;
-    this.hoverAction = hoverAction;
+    if (clickAction != null)
+      this.clickAction = clickAction.duplicate();
+
+    if (hoverAction != null)
+      this.hoverAction = hoverAction.duplicate();
 
     this.extraMessages = new ArrayList<>();
 

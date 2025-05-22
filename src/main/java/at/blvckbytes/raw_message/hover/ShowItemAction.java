@@ -102,6 +102,19 @@ public class ShowItemAction extends HoverAction {
       containerObject.add("value", SERIALIZER_SNBT.serialize(dataObject));
   }
 
+  @Override
+  public HoverAction duplicate() {
+    ShowItemAction duplicate = new ShowItemAction(material);
+
+    if (name != null)
+      duplicate.name = name.duplicate();
+
+    for (RawMessage line : lore)
+      duplicate.addLoreLine(line.duplicate());
+
+    return duplicate;
+  }
+
   private void appendMetaData(JsonObject object, ServerVersion version) {
     if (name == null && lore.isEmpty())
       return;

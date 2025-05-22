@@ -21,4 +21,9 @@ public class RunCommandAction extends ClickAction {
     else
       container.add("value", command);
   }
+
+  @Override
+  public ClickAction duplicate() {
+    return new RunCommandAction(command);
+  }
 }

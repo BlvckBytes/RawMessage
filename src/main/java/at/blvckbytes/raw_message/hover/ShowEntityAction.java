@@ -13,7 +13,7 @@ public class ShowEntityAction extends HoverAction {
 
   // Note: This action has been introduced in 1.13; F3+h needs to be enabled to render the tooltip
 
-  private static final JsonSerializer SERIALIZER_JSON = new JsonSerializer(true);
+  private static final JsonSerializer SERIALIZER_JSON = new JsonSerializer(false);
 
   private final UUID id;
   private final EntityType type;
@@ -67,5 +67,15 @@ public class ShowEntityAction extends HoverAction {
       dataObject.add("name", name.toJsonString(version));
 
     container.add("value", SERIALIZER_JSON.serialize(dataObject));
+  }
+
+  @Override
+  public HoverAction duplicate() {
+    ShowEntityAction duplicate = new ShowEntityAction(type, id);
+
+    if (name != null)
+      duplicate.name = name.duplicate();
+
+    return duplicate;
   }
 }

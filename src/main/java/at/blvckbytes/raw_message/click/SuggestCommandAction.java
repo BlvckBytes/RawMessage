@@ -21,4 +21,9 @@ public class SuggestCommandAction extends ClickAction {
     else
       container.add("value", command);
   }
+
+  @Override
+  public ClickAction duplicate() {
+    return new SuggestCommandAction(command);
+  }
 }

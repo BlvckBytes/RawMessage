@@ -7,6 +7,8 @@ public abstract class ClickAction {
 
   public abstract void appendSelf(JsonObject component, ServerVersion version);
 
+  public abstract ClickAction duplicate();
+
   protected JsonObject makeAndAppendContainer(JsonObject component, ServerVersion version) {
     JsonObject container = new JsonObject();
 

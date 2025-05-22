@@ -17,4 +17,9 @@ public class CopyToClipboardAction extends ClickAction {
     container.add("action", "copy_to_clipboard");
     container.add("value", value);
   }
+
+  @Override
+  public ClickAction duplicate() {
+    return new CopyToClipboardAction(value);
+  }
 }

@@ -17,4 +17,9 @@ public class OpenFileAction extends ClickAction {
     container.add("action", "open_file");
     container.add("value", path);
   }
+
+  @Override
+  public ClickAction duplicate() {
+    return new OpenFileAction(path);
+  }
 }

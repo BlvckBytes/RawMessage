@@ -21,4 +21,9 @@ public class OpenUrlAction extends ClickAction {
     else
       container.add("value", url);
   }
+
+  @Override
+  public ClickAction duplicate() {
+    return new OpenUrlAction(url);
+  }
 }
